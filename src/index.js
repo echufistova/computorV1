@@ -8,11 +8,6 @@ let equation = {
     }
 };
 
-let dop = {
-    flag : 0,
-    pow : 0
-};
-
 initValidation();
 
 function initValidation() {
@@ -49,8 +44,8 @@ function numberValid(equat) {
     let re = /^[\d.]+$/;
     let res = equat.search(re);
 
-    console.log(equat);
-    console.log(res);
+    // console.log(equat);
+    // console.log(res);
     return (res >= 0) ? 1 : -1
 }
 
@@ -58,23 +53,26 @@ function checkParams(part) {
     let koef = 0;
     let equat = part.split(' ');
     console.log(equat);
-    if (checkFirstParam(equat[0]) < 0)
+    if (checkFirstParam(equat[0]) < 0) {
+        console.log("here1");
         return errors(1);
+    }
     for (let i = 0; i < equat.length; i++) {
         let equat1 = equat[i];
-        console.log("equat1 " + equat1 + " , i: " + i );
+        // console.log("equat1 " + equat1 + " , i: " + i );
         if (equat1 == '=') {
             equation.flag = 1;
         }
-        if (equat1 == '*' && i <= equat.length - 1 && i != 0) {
+        else if (equat1 == '*' && i <= equat.length - 1 && i != 0) {
             if ((koef = (numberValid(equat[i - 1]))) == -1){
+                console.log("here1");
                 return errors(1);
             } else
                 koef = equat[i - 1];
-            if (checkAndGetPow(equat[i + 1], koef) < 0) {
+            if (i <= equat.length -2 && checkAndGetPow(equat[i + 1], equat[i -2], koef) < 0) {
+                console.log("here2");
                 return errors(2, equation.pow);
             }
-            // if (checkFirstParam([i - 1]))
         }
 
     }
@@ -82,25 +80,29 @@ function checkParams(part) {
 }
 
 function checkFirstParam(equat1) {
-    return (equat1.includes('*') || equat1.includes('+') ||
-        equat1.includes('-')) ? -1 : 1;
+    console.log(equat1);
+    return (equat1.includes('*') || equat1.includes('+')) ? -1 : 1;
 }
 
-function checkAndGetPow(equat1, koef) {
-    console.log('\n\n' + equat1);
+function checkAndGetPow(equat1, sign, koef) {
+    koef = +koef;
+    console.log('\n\nequat: ' + equat1);
     let pow = equat1.slice(equat1.indexOf('^') + 1, equat1.length);
-    // equation.pow = (pow > equation.pow) ? pow : equation.pow;
-    console.log(koef);
-    if (!equation.pows[pow]){
+    // console.log("koef: " + koef);
+    console.log("sign: " + sign);
+    if (!equation.pows[pow]) {
         equation.pows[pow] = 0;
     }
-    if (equation.flag == 0)
-        equation.pows[pow] += +koef;
-    else
-        equation.pows[pow] += -koef;
-    console.log(equation);
+    if (sign === '-') {
+        koef = -koef;
+    }
+    // if (equation.flag === 0) {
+    //     equation.pows[pow] += koef;
+    // } else if (equation.flag === 1) {
+    //     equation.pows[pow] -= koef;
     // }
-    console.log('pow: ' + pow);
+    (equation.flag === 0) ? equation.pows[pow] += koef : equation.pows[pow] -= koef;
+    console.log(equation);
 
     return (1);
 }
@@ -108,13 +110,16 @@ function checkAndGetPow(equat1, koef) {
 function reducedForm() {
     let res = "";
     let keys = Object.keys(equation.pows);
-    keys.map((key) => {
-        // if (equation.pows[key] < 0)
-        //     res += '-';
-        // else
-
-        res += `${equation.pows[key]} * X^${key} `
+    keys.map((key, index) => {
+        // console.log(index);
+        const sign = equation.pows[key] >= 0 ? '+' : '-';
+        if (index === 0 && sign === '+') {
+            res += `${equation.pows[key]} * X^${key} `
+        } else {
+            res += `${sign} ${Math.abs(equation.pows[key])} * X^${key} `
+        }
     });
+    res += "= 0";
     return (console.log("Reduced Form: " + res));
 }
 
