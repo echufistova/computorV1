@@ -2,9 +2,6 @@
 let equation = {
     flag : 0,
     pows : {
-        0: 0,
-        1: 0,
-        2: 0
     }
 };
 
@@ -27,9 +24,9 @@ function initValidation() {
     console.log('rightPart ', rightPart);
     console.log('leftPart ', leftPart);
     // console.log(rightPart.split('^'));
-    if (checkParams(equation) < 0)
+    if (checkParams(equation) < 0 || reducedForm(equation) < 0)
         return (-1);
-    reducedForm(equation);
+    getRoots();
 
 }
 
@@ -121,27 +118,53 @@ function reducedForm() {
 
 function checkPows() {
     let max = 0;
+    let res = "Polynomial degree: ";
     Object.keys(equation.pows).map((pow) => {
         max = pow;
         console.log("pow  " + max);
     });
-    console.log(max);
+    res += max;
+    console.log(res);
     return ((max > 2) ? errors(2, max) : 1);
 }
 
 function getRoots() {
+    let a = equation.pows[2];
+    console.log("a: ", a);
+    let b = equation.pows[1];
+    console.log("b: ", b);
+    let c = equation.pows[0];
+    console.log("c: ", c);
+    let discrim = b * b - 4 * a * c;
+    let x = [];
+    console.log(discrim);
+    if (discrim < 0) {
+        return (errors(3));
+    } else {
+        (discrim === 0) ? console.log("The solution is: ") :
+            console.log("Discriminant is strictly positive, the two solutions are: ");
+        x.push((-b + Math.pow(discrim, 0.5)) / (2 * a));
+        x.push((-b - Math.pow(discrim, 0.5)) / (2 * a));
+
+        for (res in x)
+            console.log(x[res]);
+    }
 
 }
 
-function errors(i, j) {
-    if (i == 0)
+function errors(i) {
+    if (i == 0) {
         console.log("Check please your arguments!\n");
-    else if (i == 1)
+    }
+    else if (i == 1) {
         console.log("Syntax Error!\n");
-    else if (i == 2)
-        console.log("Polynomial degree: " + j +
-            "\nThe polynomial degree iThe polynomial degree is stricly greater than 2, I can't solve.\n");
-
+    }
+    else if (i == 2) {
+        console.log("The polynomial degree is stricly greater than 2, I can't solve.");
+    }
+    else if (i == 3) {
+        console.log("Discriminant is strictly negative!");
+    }
     return (-1);
 }
 
