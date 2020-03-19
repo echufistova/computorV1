@@ -29,7 +29,8 @@ function initValidation() {
     // console.log(rightPart.split('^'));
     if (checkParams(equation) < 0)
         return (-1);
-    reducedForm(equation)
+    reducedForm(equation);
+
 }
 
 function equatValid(equat) {
@@ -60,16 +61,16 @@ function checkParams(part) {
     for (let i = 0; i < equat.length; i++) {
         let equat1 = equat[i];
         // console.log("equat1 " + equat1 + " , i: " + i );
-        if (equat1 == '=') {
+        if (equat1 === '=') {
             equation.flag = 1;
         }
-        else if (equat1 == '*' && i <= equat.length - 1 && i != 0) {
+        else if (equat1 === '*' && i <= equat.length - 1 && i != 0) {
             if ((koef = (numberValid(equat[i - 1]))) == -1){
                 console.log("here1");
                 return errors(1);
             } else
                 koef = equat[i - 1];
-            if (i <= equat.length -2 && checkAndGetPow(equat[i + 1], equat[i -2], koef) < 0) {
+            if (i <= equat.length -2 && getPow(equat[i + 1], equat[i -2], koef) < 0) {
                 console.log("here2");
                 return errors(2, equation.pow);
             }
@@ -84,7 +85,7 @@ function checkFirstParam(equat1) {
     return (equat1.includes('*') || equat1.includes('+')) ? -1 : 1;
 }
 
-function checkAndGetPow(equat1, sign, koef) {
+function getPow(equat1, sign, koef) {
     koef = +koef;
     console.log('\n\nequat: ' + equat1);
     let pow = equat1.slice(equat1.indexOf('^') + 1, equat1.length);
@@ -96,11 +97,6 @@ function checkAndGetPow(equat1, sign, koef) {
     if (sign === '-') {
         koef = -koef;
     }
-    // if (equation.flag === 0) {
-    //     equation.pows[pow] += koef;
-    // } else if (equation.flag === 1) {
-    //     equation.pows[pow] -= koef;
-    // }
     (equation.flag === 0) ? equation.pows[pow] += koef : equation.pows[pow] -= koef;
     console.log(equation);
 
@@ -108,9 +104,8 @@ function checkAndGetPow(equat1, sign, koef) {
 }
 
 function reducedForm() {
-    let res = "";
-    let keys = Object.keys(equation.pows);
-    keys.map((key, index) => {
+    let res = "Reduced Form: ";
+    Object.keys(equation.pows).map((key, index) => {
         // console.log(index);
         const sign = equation.pows[key] >= 0 ? '+' : '-';
         if (index === 0 && sign === '+') {
@@ -120,7 +115,22 @@ function reducedForm() {
         }
     });
     res += "= 0";
-    return (console.log("Reduced Form: " + res));
+    console.log(res);
+    return (checkPows());
+}
+
+function checkPows() {
+    let max = 0;
+    Object.keys(equation.pows).map((pow) => {
+        max = pow;
+        console.log("pow  " + max);
+    });
+    console.log(max);
+    return ((max > 2) ? errors(2, max) : 1);
+}
+
+function getRoots() {
+
 }
 
 function errors(i, j) {
