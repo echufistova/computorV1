@@ -42,7 +42,7 @@ function numberValid(equat) {
     let re = /^[\d.]+$/;
     let res = equat.search(re);
 
-    // console.log(equat);
+    console.log(equat);
     // console.log(res);
     return (res >= 0) ? 1 : -1
 }
@@ -129,11 +129,11 @@ function checkPows() {
 }
 
 function getRoots() {
-    let a = equation.pows[2];
+    let a = (equation.pows[2]) ? equation.pows[2] : 0;
     console.log("a: ", a);
-    let b = equation.pows[1];
+    let b = (equation.pows[1]) ? equation.pows[1] : 0;
     console.log("b: ", b);
-    let c = equation.pows[0];
+    let c = (equation.pows[0]) ? equation.pows[0] : 0;
     console.log("c: ", c);
     let discrim = b * b - 4 * a * c;
     let x = [];
@@ -141,10 +141,16 @@ function getRoots() {
     if (discrim < 0) {
         return (errors(3));
     } else {
-        (discrim === 0) ? console.log("The solution is: ") :
+        (discrim === 0 || a === 0) ? console.log("The solution is: ") :
             console.log("Discriminant is strictly positive, the two solutions are: ");
-        x.push((-b + Math.pow(discrim, 0.5)) / (2 * a));
-        x.push((-b - Math.pow(discrim, 0.5)) / (2 * a));
+        if (a === 0){
+            x = -c / b;
+            console.log(x);
+        } else {
+
+            x.push((-b + Math.pow(discrim, 0.5)) / (2 * a));
+            x.push((-b - Math.pow(discrim, 0.5)) / (2 * a));
+        }
 
         for (res in x)
             console.log(x[res]);
