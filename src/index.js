@@ -2,21 +2,21 @@
 let equation = {
     flag : 0,
     pows : {
-    },
-    x : {
-
     }
 };
 
 initValidation();
 
 function initValidation() {
+    let a = 0;
+    let b = 0;
+    let c = 0;
+    let x = [];
     if (process.argv.length != 3 || process.argv[2].length == 0) {
         return errors(0);
     }
     // console.log(process.argv[2]);
     const equat = process.argv[2];
-    let res;
     if (equatValid(equat) < 0) {
         return errors(1);
     }
@@ -29,22 +29,21 @@ function initValidation() {
     // console.log(rightPart.split('^'));
     if (checkParams(equat) < 0 || reducedForm(equat) < 0)
         return (-1);
-    let a = (equation.pows[2]) ? equation.pows[2] : 0;
-    let b = (equation.pows[1]) ? equation.pows[1] : 0;
-    let c = (equation.pows[0]) ? equation.pows[0] : 0;
-    let discrim = b * b - 4 * a * c;
-    (discrim === 0 || (a === 0 && discrim >= 0)) ? console.log("The solution is: ") :
-        console.log("Discriminant is strictly positive, the two solutions are: ");
-    // if ( getRoots(a, b, c, discrim);
-    if ((res = getRoots(a, b, c, discrim)) < 0) {
-        return (-1);
-    } else if (res === 1) {
-        console.log(equation.x[0]);
+    a = (equation.pows[2]) ? equation.pows[2] : 0;
+    b = (equation.pows[1]) ? equation.pows[1] : 0;
+    c = (equation.pows[0]) ? equation.pows[0] : 0;
+    if (a === 0 ) {
+        x.push(-c / b);
+        // return (1);
     } else {
-        console.log(equation.x[0]);
-        console.log(equation.x[1]);
+        discrim = b * b - 4 * a * c;
+        x = getRoots(a, b, c, discrim);
+        (discrim === 0 || (a === 0 && discrim >= 0)) ? console.log("The solution is: ") :
+            console.log("Discriminant is strictly positive, the two solutions are: ");
     }
-
+    for (res in x) {
+        console.log(x[res]);
+    }
 }
 
 function equatValid(equat) {
@@ -146,6 +145,7 @@ function checkPows() {
 }
 
 function getRoots(a, b, c,discrim) {
+
     // let a = (equation.pows[2]) ? equation.pows[2] : 0;
     // console.log("a: ", a);
     // let b = (equation.pows[1]) ? equation.pows[1] : 0;
@@ -154,55 +154,31 @@ function getRoots(a, b, c,discrim) {
     // console.log("c: ", c);
     // let discrim = b * b - 4 * a * c;
     // console.log(discrim);
+    const x = [];
     if (discrim < 0) {
         return (errors(3));
+    } else if (discrim === 0) {
+        x.push(-b / (2 * a));
     } else {
-        if (a === 0 ){
-            equation.x[0] = (-c / b);
-            return (1);
-            // console.log(x);
-        } else if (discrim === 0) {
-            equation.x[0] = -b / (2 * a);
-            return (1);
-        } else {
-            equation.x[0] = ((-b + Math.pow(discrim, 0.5)) / (2 * a));
-            equation.x[1] = ((-b - Math.pow(discrim, 0.5)) / (2 * a));
-            return (2);
-        }
+       x.push((-b + Math.pow(discrim, 0.5)) / (2 * a));
+       x.push((-b - Math.pow(discrim, 0.5)) / (2 * a));
     }
+    return (x);
 }
 
 
 function errors(i) {
-    if (i == 0) {
+    if (i === 0) {
         console.log("Check please your arguments!\n");
     }
-    else if (i == 1) {
+    else if (i === 1) {
         console.log("Syntax Error!\n");
     }
-    else if (i == 2) {
+    else if (i === 2) {
         console.log("The polynomial degree is stricly greater than 2, I can't solve.");
     }
-    else if (i == 3) {
+    else if (i === 3) {
         console.log("Discriminant is strictly negative!");
     }
-    return (-1);
+    process.exit(0);
 }
-
-
-
-// equation["3"]
-
-
-//
-// const tmp = () => {return null};
-// tmp();
-// function tmp2() {
-//     return null;
-// }
-// tmp2();
-//
-// (() => {
-//     return null;
-// })();
-
