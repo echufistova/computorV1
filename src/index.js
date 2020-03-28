@@ -11,6 +11,7 @@ function initValidation() {
     let a = 0;
     let b = 0;
     let c = 0;
+    let discrim = 0;
     let x = [];
     if (process.argv.length != 3 || process.argv[2].length == 0) {
         return errors(0);
@@ -21,12 +22,6 @@ function initValidation() {
         return errors(1);
     }
 
-    // console.log('equat ', equat);
-    // const rightPart = (equat.split("="))[0];
-    // const leftPart = equat.split("=")[1];
-    // console.log('rightPart ', rightPart);
-    // console.log('leftPart ', leftPart);
-    // console.log(rightPart.split('^'));
     if (checkParams(equat) < 0 || reducedForm(equat) < 0)
         return (-1);
     a = (equation.pows[2]) ? equation.pows[2] : 0;
@@ -38,9 +33,9 @@ function initValidation() {
     } else {
         discrim = b * b - 4 * a * c;
         x = getRoots(a, b, c, discrim);
-        (discrim === 0 || (a === 0 && discrim >= 0)) ? console.log("The solution is: ") :
-            console.log("Discriminant is strictly positive, the two solutions are: ");
     }
+    (discrim === 0 || (a === 0 && discrim >= 0)) ? console.log("The solution is: ") :
+        console.log("Discriminant is strictly positive, the two solutions are: ");
     for (res in x) {
         console.log(x[res]);
     }
@@ -79,14 +74,21 @@ function checkParams(part) {
             equation.flag = 1;
         }
         else if (equat1 === '*' && i <= equat.length - 1 && i !== 0) {
-            if ((koef = (numberValid(equat[i - 1]))) === -1){
+            if ((koef = (numberValid(equat[i - 1]))) === -1) {
                 console.log("here1");
                 return errors(1);
-            } else
+            } else {
                 koef = equat[i - 1];
-            if (i <= equat.length -2 && getPow(equat[i + 1], equat[i -2], koef) < 0) {
-                console.log("here2");
-                return errors(2, equation.pow);
+            }
+            if (equat[i + 1].indexOf('^', 0) === -1 && equat[i + 1].indexOf('X', 0) === 0) {
+                equat[i + 1] += "^1";
+                console.log(equat[i + 1]);
+                getPow(equat[i + 1], equat[i - 2], koef);
+            } else {
+                if (i <= equat.length - 2 && getPow(equat[i + 1], equat[i - 2], koef) < 0) {
+                    console.log("here2");
+                    return errors(2, equation.pow);
+                }
             }
         }
     }
@@ -118,6 +120,7 @@ function getPow(equat1, sign, koef) {
 
 function reducedForm() {
     let res = "Reduced Form: ";
+    console.log(equation);
     Object.keys(equation.pows).map((key, index) => {
         // console.log(index);
         const sign = equation.pows[key] >= 0 ? '+' : '-';
@@ -141,7 +144,7 @@ function checkPows() {
     });
     res += max;
     console.log(res);
-    return ((max > 2) ? errors(2, max) : 1);
+    return ((max > 2 || max < 0) ? errors(2, max) : 1);
 }
 
 function getRoots(a, b, c,discrim) {
