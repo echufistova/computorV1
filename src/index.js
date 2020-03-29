@@ -5,9 +5,9 @@ let equation = {
     }
 };
 
-initValidation();
+main();
 
-function initValidation() {
+function main() {
     let a = 0;
     let b = 0;
     let c = 0;
@@ -47,7 +47,12 @@ function equatValid(equat) {
     let res = equat.search(re);
 
     // console.log(res);
-    return (res >= 0 && equat.includes('=')) ? 1 : -1
+    if (res === -1 || !equat.includes('=')) {
+        console.log("look here");
+        errors(1);
+    }
+    // else if ()
+    return 1;
 }
 
 function numberValid(equat) {
@@ -56,7 +61,20 @@ function numberValid(equat) {
 
     // console.log(equat);
     // console.log(res)ты ;
-    return (res >= 0) ? 1 : -1
+    if (res === -1)
+        errors(1);
+    return 1;
+}
+
+function signValid(equat) {
+    let re = /^[\d.]+$/;
+    let res = equat.search(re);
+
+    // console.log(equat);
+    // console.log(res)ты ;
+    if (res === -1)
+        errors(1);
+    return 1;
 }
 
 function checkParams(part) {
@@ -69,11 +87,12 @@ function checkParams(part) {
     }
     for (let i = 0; i < equat.length; i++) {
         let equat1 = equat[i];
+        console.log("nachalo: " + equat1);
         // console.log("equat1 " + equat1 + " , i: " + i );
         if (equat1 === '=') {
             equation.flag = 1;
-        }
-        else if (equat1 === '*' && i <= equat.length - 1 && i !== 0) {
+        } else if (equat1 === '*' && i <= equat.length - 1 && i !== 0) {
+            console.log("1) equat1: " + equat1);
             if ((koef = (numberValid(equat[i - 1]))) === -1) {
                 console.log("here1");
                 return errors(1);
@@ -82,7 +101,7 @@ function checkParams(part) {
             }
             if (equat[i + 1].indexOf('^', 0) === -1 && equat[i + 1].indexOf('X', 0) === 0) {
                 equat[i + 1] += "^1";
-                console.log(equat[i + 1]);
+                console.log("equat i + 1: " + equat[i + 1]);
                 getPow(equat[i + 1], equat[i - 2], koef);
             } else {
                 if (i <= equat.length - 2 && getPow(equat[i + 1], equat[i - 2], koef) < 0) {
@@ -90,7 +109,23 @@ function checkParams(part) {
                     return errors(2, equation.pow);
                 }
             }
+        } else if (i <= equat.length - 1 && equat[i + 1 ] !== '*' && equat1.indexOf('X^', 0) === -1 && numberValid(equat1) !== -1) {
+            console.log("2) equat1: " + equat1);
+            console.log(equation);
+            if (numberValid(equat1) === -1) {
+                console.log("here5");
+                return errors(1);
+            }
+            // if (equat[i + 1].indexOf('^', 0) === -1 && equat[i + 1].indexOf('X', 0) === 0) {
+                // equat[i + 1] += "^1";
+                console.log(equat1);
+            if (i === 0)
+                getPow('X^0', '+', equat1);
+            else
+                getPow('X^0', equat[i - 1], equat1);
+            // }
         }
+
     }
     return (1);
 
@@ -172,10 +207,10 @@ function getRoots(a, b, c,discrim) {
 
 function errors(i) {
     if (i === 0) {
-        console.log("Check please your arguments!\n");
+        console.log("Check please your arguments!");
     }
     else if (i === 1) {
-        console.log("Syntax Error!\n");
+        console.log("Syntax Error!");
     }
     else if (i === 2) {
         console.log("The polynomial degree is stricly greater than 2, I can't solve.");
