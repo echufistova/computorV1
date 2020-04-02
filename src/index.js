@@ -59,21 +59,44 @@ function numberValid(equat) {
     let re = /^[\d.]+$/;
     let res = equat.search(re);
 
-    // console.log(equat);
+    console.log("func number valid");
+
     // console.log(res)ты ;
-    if (res === -1)
-        errors(1);
+    if (res === -1) {
+        console.log("func number not valid");
+        return (errors(1));
+    }
     return 1;
 }
 
-function signValid(equat) {
-    let re = /^[\d.]+$/;
+function signValid(equat, equatPrev, equatNext) {
+    if (isSign(equat) && equat.length !== 1)
+        return (errors(1));
+    if (equat === '*' && (equatPrev === '-' || equatPrev === '+' ||
+        equatNext === '-' || equatNext === '+' )) {
+        console.log("sadd");
+        return (errors(1));
+    }
+    else if (equat === '+' && (equatPrev === '-' || equatNext === '-')) {
+        return (errors(4));
+    }
+    else if (equat === '-' && (equatPrev === '-' || equatNext === '-')) {
+        return (errors(4));
+    }
+
+    return 1;
+}
+function isSign(equat) {
+
+    console.log("equat '" + equat + '\'');
+
+    let re = /^[+*-.]+$/;
     let res = equat.search(re);
 
-    // console.log(equat);
+    console.log("not sign");
     // console.log(res)ты ;
     if (res === -1)
-        errors(1);
+        return 0;
     return 1;
 }
 
@@ -81,24 +104,19 @@ function checkParams(part) {
     let koef = 0;
     let equat = part.split(' ');
     // console.log(equat);
-    if (checkFirstParam(equat[0]) < 0) {
-        console.log("here1");
-        return errors(1);
-    }
+    checkFirstParam(equat[0]);
     for (let i = 0; i < equat.length; i++) {
         let equat1 = equat[i];
-        console.log("nachalo: " + equat1);
+        console.log("nachalo: '" + equat1 + '\'');
         // console.log("equat1 " + equat1 + " , i: " + i );
+        signValid(equat1, equat[i - 1], equat[i + 1]);
         if (equat1 === '=') {
             equation.flag = 1;
-        } else if (equat1 === '*' && i <= equat.length - 1 && i !== 0) {
+        }
+        else if (equat1 === '*' && i <= equat.length - 1 && i !== 0) {
             console.log("1) equat1: " + equat1);
-            if ((koef = (numberValid(equat[i - 1]))) === -1) {
-                console.log("here1");
-                return errors(1);
-            } else {
-                koef = equat[i - 1];
-            }
+            numberValid(equat[i - 1]);
+            koef = equat[i - 1];
             if (equat[i + 1].indexOf('^', 0) === -1 && equat[i + 1].indexOf('X', 0) === 0) {
                 equat[i + 1] += "^1";
                 console.log("equat i + 1: " + equat[i + 1]);
@@ -109,13 +127,14 @@ function checkParams(part) {
                     return errors(2, equation.pow);
                 }
             }
-        } else if (i <= equat.length - 1 && equat[i + 1 ] !== '*' && equat1.indexOf('X^', 0) === -1 && numberValid(equat1) !== -1) {
+        } else if (i <= equat.length - 1 && equat[i + 1 ] !== '*' && equat1.indexOf('X^', 0) === -1
+            && !isSign(equat1) && numberValid(equat1) !== -1) {
             console.log("2) equat1: " + equat1);
             console.log(equation);
-            if (numberValid(equat1) === -1) {
-                console.log("here5");
-                return errors(1);
-            }
+            // if (numberValid(equat1) === -1) {
+            //     console.log("here5");
+            //     return errors(1);
+            // }
             // if (equat[i + 1].indexOf('^', 0) === -1 && equat[i + 1].indexOf('X', 0) === 0) {
                 // equat[i + 1] += "^1";
                 console.log(equat1);
@@ -133,7 +152,10 @@ function checkParams(part) {
 
 function checkFirstParam(equat1) {
     // console.log(equat1);
-    return (equat1.includes('*') || equat1.includes('+')) ? -1 : 1;
+    if (equat1.includes('*') || equat1.includes('+')) {
+        return (errors(1));
+    }
+    return (1);
 }
 
 function getPow(equat1, sign, koef) {
@@ -217,6 +239,9 @@ function errors(i) {
     }
     else if (i === 3) {
         console.log("Discriminant is strictly negative!");
+    }
+    else if (i === 4) {
+        console.log("Try another format or сoefficient");
     }
     process.exit(0);
 }
